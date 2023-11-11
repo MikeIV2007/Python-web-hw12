@@ -1,0 +1,122 @@
+Database models.py ceate User model and make relation with contacts (SQLAlchemy)
+Repository create users.py to work with database (SQLAlchemy)
+    Add libgravatar library for crating avatars:
+        poetry add libgravatar
+Create auth.py routes and add rout to the main.py
+Add Pydantic  responce models in shemas.py
+Create service.py in service folder: src\services\auth.py
+Add next libraries to the project:
+        poetry add python-jose["cryptography"]
+        poetry add passlib["bcrypt"]
+        poetry add python-multipart
+
+Create PostgreSQL database "HW12_RESAPI" and do migrations:
+    start PostgreSQL docker container
+        1. Configure database:
+            alembic init migrations - creates folder migrations and file alembic.ini ctrats(can be satrted in root derectory of the project):
+            
+        2.Configure migrations\env.py according to postgres database:
+            from src.database.models import Base
+            from src.database.connect import URI
+
+            target_metadata = Base.metadata
+            config.set_main_option("sqlalchemy.url", URI)
+
+        3. Create migrations:
+            alembic revision --autogenerate -m 'init' - creating table alembic_version in DB and file Python-web-hw12\migrations\versions\52da58037552_init.py
+
+        4. Execute migrations:
+            alembic upgrade head - creates Contats and Useres tables
+
+
+Start uvicorn project:
+    uvicorn main:app --host localhost --port 8000 --reload
+Open Postman application and create user1 post Signup (body/row/ json):
+    request: class UserModel(BaseModel)
+
+        {
+            "username": "user1",
+            "email": "user1@test.com",
+            "password": "123456"
+        }
+
+    response: class UserResponse(BaseModel):
+        {
+            "user": {
+                "id": 1,
+                "username": "user1",
+                "email": "user1@test.com",
+                "created_at": "2023-11-10T16:38:02.081734",
+                "avatar": "https://www.gravatar.com/avatar/eb7c8c7791f4f4c7cdd712635277a1f2"
+            },
+            "detail": "User successfully created"
+        }
+
+login user (body x-www-form-urlencoded):
+    request class OAuth2PasswordRequestForm from fastapi.security
+    username: user1@test.com
+    password: 123456
+
+    responce: class TokenModel:
+        {
+            "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyMUB0ZXN0LmNvbSIsImlhdCI6MTY5OTYzMTQwNSwiZXhwIjoxNjk5NjMyMzA1LCJzY29wZSI6ImFjY2Vzc190b2tlbiJ9.ZuuCst7-j-rBHmXdLuS0iZebJo8rQJ4A_1so7dn5eHM",
+            "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyMUB0ZXN0LmNvbSIsImlhdCI6MTY5OTYzMTQwNSwiZXhwIjoxNzAwMjM2MjA1LCJzY29wZSI6InJlZnJlc2hfdG9rZW4ifQ.SuLV0R94Uymm8yEYUh2mf0yuOkhJNxRRj8ljmAmzXGc",
+            "token_type": "bearer"
+        }
+        
+        Save access_token and refresh_token at the "environment quick loock" tag (left top corner) as globals
+Create contact:
+    First choose Authorisation / Bearer tocken / access token
+    Add new contact JSON: body/row/JSON
+        {
+            "name": "Curtg",
+            "surname": "Walker",
+            "email": "cwolker@test.com",
+            "phone": "111 22 3334 ",
+            "birthday": "2000-11-11",
+            "additional": "very important person"
+        }
+Get all contacts:
+    Authorisation / Bearer tocken / access token
+Get contact by id:
+    Authorisation / Bearer tocken / access token
+    (Param: contact_id    1) ???
+    route:
+        http://localhost:8000/api/contacts/id/1
+Get contact by name:
+    Authorisation / Bearer tocken / access token
+    route:
+        http://localhost:8000/api/contacts/name/Curtg
+Get contact by surname:
+    Authorisation / Bearer tocken / access token
+    route:
+        http://localhost:8000/api/contacts/surname/Walker
+Update(put) contact by id
+    Authorisation / Bearer tocken / access token
+    route:
+        http://localhost:8000/api/contacts/2
+    body / row / json
+
+        {
+            "name": "Vasay",
+            "surname": "Vasechkin",
+            "email": "VV@test.com",
+            "phone": "77 77 777 77",
+            "birthday": "2000-01-01",
+            "additional": "string"
+        }
+Delete contact by id
+    Authorisation / Bearer tocken / access token
+    route:
+        http://localhost:8000/api/contacts/3
+
+Create contact relation with usere id ( chamge all routes and reposirories for contacts )
+
+All functions are checked in Postman
+
+
+Get birthdays in the next 7 days
+    Authorisation / Bearer tocken / access token
+http://localhost:8000/api/contacts/birthdays_in_next_7_days
+
+
